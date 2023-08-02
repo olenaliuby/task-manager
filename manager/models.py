@@ -103,3 +103,26 @@ class Task(models.Model):
             "manager:task-detail",
             kwargs={"pk": self.pk}
         )
+
+class Commentary(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="commentaries"
+    )
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        related_name="commentaries"
+    )
+    created_time = models.DateTimeField(auto_now_add=True)
+    content = models.TextField()
+
+    class Meta:
+        ordering = ["created_time"]
+        verbose_name = "commentary"
+        verbose_name_plural = "commentaries"
+
+    def __str__(self):
+        return f"{self.user} commented on the {self.task.name}"
+
