@@ -104,6 +104,7 @@ class Task(models.Model):
             kwargs={"pk": self.pk}
         )
 
+
 class Commentary(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -125,4 +126,3 @@ class Commentary(models.Model):
 
     def __str__(self):
         return f"{self.user} commented on the {self.task.name}"
-
