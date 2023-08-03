@@ -1,7 +1,10 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
+from django.forms import DateTimeInput
+from django.utils import timezone
 
-from manager.models import Worker
+from manager.models import Task, Commentary, Worker
 
 
 class WorkerCreationForm(UserCreationForm):
@@ -33,4 +36,29 @@ class WorkerPositionSearchForm(forms.Form):
         required=False,
         label="",
         widget=forms.TextInput(attrs={"placeholder": "Search by position"})
+    )
+
+
+class TaskCreateForm(forms.ModelForm):
+    deadline = forms.DateTimeField(
+        widget=DateTimeInput(
+            attrs={"type": "datetime-local"}),
+        initial=timezone.now().replace(second=0, microsecond=0)
+    )
+    assignees = forms.ModelMultipleChoiceField(
+        queryset=get_user_model().objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    class Meta:
+        model = Task
+        fields = "__all__"
+
+
+class TaskNameSearchForm(forms.Form):
+    name = forms.CharField(
+        max_length=255,
+        required=False,
+        label="",
+        widget=forms.TextInput(attrs={"placeholder": "Search by name"})
     )
