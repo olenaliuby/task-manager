@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_filters %}
+
+{% block title %}
+  Teammate — {{ worker.first_name }} {{ worker.last_name }}
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="page-header min-height-300 border-radius-xl mt-4"
+         style="background-image: url({% static 'img/curved.jpeg' %}); background-position-y: 50%;">
+      <span class="mask bg-gradient-primary opacity-6"></span>
+    </div>
+    <div class="card card-body blur shadow-blur mx-4 mt-n6 overflow-hidden">
+      <div class="d-flex justify-content-between align-items-center border-bottom pb-5">
+        <h3 class="mb-0">{{ worker.first_name }} {{ worker.last_name }}</h3>
+        <div>
+          <p class="mb-2 text-sm"><strong>Username:</strong> {{ worker.username }}</p>
+          <p class="mb-2 text-sm"><strong>Position:</strong> {{ worker.position }}</p>
+        </div>
+        {% if user.is_superuser %}
+          <div class="btn-group">
+            <a href="{% url 'manager:worker-update' pk=worker.id %}" class="btn btn-light">
+              <i class="fas fa-edit"></i> Update
+            </a>
+            <a href="{% url 'manager:worker-delete' pk=worker.id %}" class="btn btn-danger">
+              <i class="fas fa-trash"></i> Delete
+            </a>
+          </div>
+        {% endif %}
+      </div>
+      <div>
+        <h5 class="mt-4">Assigned tasks:</h5>
+        {% if worker.assigned_tasks %}
+          {% for task in worker.assigned_tasks.all %}
+            <div class="p-2 bg-light border rounded mt-2 position-relative">
+              <h6 class="mb-0">
+                <a href="{% url "manager:task-detail" pk=task.id %}"
+                   class="text-decoration-none text-dark">{{ task.name }}</a>
+              </h6>
+              <p>{{ task.description }}</p>
+              <a href="{% url "manager:task-detail" pk=task.id %}" class="stretched-link"></a>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>There are no tasks assigned!</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

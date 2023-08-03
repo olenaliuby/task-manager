@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block title %}
+  {{ object|yesno:"Update information,Create teammate" }}
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid py-4">
+    <h1>{{ object|yesno:"Update information,Create teammate" }}</h1>
+    <form action="" method="post" novalidate>
+      {% csrf_token %}
+      {{ form|crispy }}
+      <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
+  </div>
+{% endblock %}
