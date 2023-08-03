@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.forms import DateTimeInput
 from django.utils import timezone
 
-from manager.models import Task, Commentary, Worker
+from manager.models import Task, Worker, TaskType, Commentary
 
 
 class WorkerCreationForm(UserCreationForm):
@@ -56,6 +56,21 @@ class TaskCreateForm(forms.ModelForm):
 
 
 class TaskNameSearchForm(forms.Form):
+    name = forms.CharField(
+        max_length=255,
+        required=False,
+        label="",
+        widget=forms.TextInput(attrs={"placeholder": "Search by name"})
+    )
+
+
+class TaskTypeCreateForm(forms.ModelForm):
+    class Meta:
+        model = TaskType
+        fields = "__all__"
+
+
+class TaskTypeNameSearchForm(forms.Form):
     name = forms.CharField(
         max_length=255,
         required=False,
