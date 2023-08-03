@@ -6,12 +6,23 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container-fluid py-4">
-    <h1>{{ object|yesno:"Update information,Create teammate" }}</h1>
-    <form action="" method="post" novalidate>
-      {% csrf_token %}
-      {{ form|crispy }}
-      <input type="submit" value="Submit" class="btn btn-primary">
-    </form>
-  </div>
+  {% if request.user.is_staff or request.user == worker %}
+    <div class="container-fluid py-4">
+      <h1>{{ object|yesno:"Update information,Create teammate" }}</h1>
+      <form action="" method="post" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="Submit" class="btn btn-primary">
+      </form>
+    </div>
+  {% else %}
+    <div class="card">
+      <div class="card-header bg-dark text-white">
+        <h4 class="mb-0 text-white">Permission denied</h4>
+      </div>
+      <div class="card-body">
+        <h6>Sorry, only users with admin rights can update teammates.</h6>
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}

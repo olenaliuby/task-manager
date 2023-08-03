@@ -5,18 +5,27 @@
     <div class="row justify-content-center">
       <div class="col-lg-12">
         <div class="card">
-          <div class="card-header bg-danger text-white">
-            <h4 class="mb-0 text-white">Delete Confirmation</h4>
-          </div>
-          <div class="card-body">
-            <h6>Are you sure you want to delete teammate "{{ worker.first_name }} {{ worker.last_name }}"?</h6>
-            <form action="" method="post">
-              {% csrf_token %}
-              <input type="submit" value="Yes, Delete" class="btn btn-danger">
-              <a href="{% url "manager:worker-detail" pk=worker.id %}" class="btn btn-primary">Cancel</a>
-            </form>
-          </div>
-        </div>
+          {% if request.user.is_staff %}
+            <div class="card-header bg-dark text-white">
+              <h4 class="mb-0 text-white">Delete Confirmation</h4>
+            </div>
+            <div class="card-body">
+              <h6>Are you sure you want to delete teammate "{{ worker.first_name }} {{ worker.last_name }}"?</h6>
+              <form action="" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Yes, Delete" class="btn btn-danger">
+                <a href="{% url "manager:worker-detail" pk=worker.id %}" class="btn btn-primary">Cancel</a>
+              </form>
+            </div>
+          {% else %}
+            <div class="card-header bg-dark text-white">
+              <h4 class="mb-0 text-white">Permission denied</h4>
+            </div>
+            <div class="card-body">
+              <h6>Sorry, only users with admin rights can delete teammates.</h6>
+            </div>
+            </div>
+          {% endif %}
       </div>
     </div>
   </div>
