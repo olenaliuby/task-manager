@@ -15,8 +15,14 @@ from manager.views import (
     TaskDetailView,
     TaskUpdateView,
     TaskDeleteView,
-    toggle_assign_to_task, TaskTypeListView, TaskTypeCreateView, TaskTypeDetailView, TaskTypeUpdateView,
-    TaskTypeDeleteView
+    toggle_assign_to_task,
+    TaskTypeListView,
+    TaskTypeCreateView,
+    TaskTypeDetailView,
+    TaskTypeUpdateView,
+    TaskTypeDeleteView,
+    CommentaryUpdateView,
+    CommentaryDeleteView
 )
 
 urlpatterns = [
@@ -72,6 +78,16 @@ urlpatterns = [
         "task-types/<int:pk>/delete/",
         TaskTypeDeleteView.as_view(),
         name="task-type-delete"
+    ),
+    path(
+        "commentaries/<int:pk>/update/",
+        CommentaryUpdateView.as_view(),
+        name="commentary-update"
+    ),
+    path(
+        "commentaries/<int:pk>/delete/",
+        CommentaryDeleteView.as_view(),
+        name="commentary-delete"
     ),
 ]
 

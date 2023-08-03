@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
 
@@ -12,9 +12,9 @@ from manager.forms import (
     TaskNameSearchForm,
     TaskCreateForm,
     TaskTypeNameSearchForm,
-    TaskTypeCreateForm,
+    TaskTypeCreateForm, CommentaryForm,
 )
-from manager.models import Task, Worker, TaskType
+from manager.models import Task, Worker, TaskType, Commentary
 
 
 @login_required
@@ -137,6 +137,23 @@ class TaskDetailView(LoginRequiredMixin, generic.DetailView):
         .select_related("task_type")
     )
 
+    def get_context_data(self, **kwargs):
+        context = super(TaskDetailView, self).get_context_data(**kwargs)
+        context["form"] = CommentaryForm()
+        task = self.get_object()
+        context["comments"] = task.commentaries.all()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = CommentaryForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.task = self.get_object()
+            comment.user = request.user
+            comment.save()
+            return redirect(self.get_object().get_absolute_url())
+        return super().get(request, *args, **kwargs)
+
 
 class TaskCreateView(LoginRequiredMixin, generic.CreateView):
     model = Task
@@ -222,3 +239,28 @@ class TaskTypeDeleteView(LoginRequiredMixin, generic.DeleteView):
     context_object_name = "task_type"
     template_name = "manager/task_type_confirm_delete.html"
     success_url = reverse_lazy("manager:task-type-list")
+
+
+class CommentaryUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Commentary
+    form_class = CommentaryForm
+    template_name = "manager/commentary_form.html"
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        commentary = self.get_object()
+        task_id = commentary.task_id
+        return reverse("manager:task-detail", kwargs={"pk": task_id})
+
+
+class CommentaryDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Commentary
+    template_name = "manager/commentary_confirm_delete.html"
+
+    def get_success_url(self):
+        commentary = self.get_object()
+        task_id = commentary.task_id
+        return reverse("manager:task-detail", kwargs={"pk": task_id})
