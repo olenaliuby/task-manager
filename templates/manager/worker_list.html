@@ -46,8 +46,8 @@
                   </th>
                 </tr>
                 </thead>
-                <tbody>
                 {% if worker_list %}
+                  <tbody>
                   {% for worker in worker_list %}
                     <tr>
                       <td>
@@ -80,12 +80,17 @@
                       </td>
                     </tr>
                   {% endfor %}
+                  </tbody>
                 {% else %}
+                  <tbody>
                   <tr>
-                    <td colspan="4" class="text-center">There are no teammates!</td>
+                    <td colspan="6" class="text-center py-4">
+                      <h4>There are no teammates!</h4>
+                      <p>Looks like there are no teammates at the moment.</p>
+                    </td>
                   </tr>
+                  </tbody>
                 {% endif %}
-                </tbody>
               </table>
             </div>
           </div>
