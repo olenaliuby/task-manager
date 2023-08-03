@@ -164,7 +164,9 @@ class TaskCreateView(LoginRequiredMixin, generic.CreateView):
 class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Task
     form_class = TaskCreateForm
-    success_url = reverse_lazy("manager:task-list")
+
+    def get_success_url(self):
+        return reverse("manager:task-detail", args=[self.object.pk])
 
 
 class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
@@ -214,7 +216,9 @@ class TaskTypeCreateView(LoginRequiredMixin, generic.CreateView):
     queryset = TaskType.objects.prefetch_related("tasks")
     form_class = TaskTypeCreateForm
     template_name = "manager/task_type_form.html"
-    success_url = reverse_lazy("manager:task-type-list")
+
+    def get_success_url(self):
+        return reverse("manager:task-type-detail", args=[self.object.pk])
 
 
 class TaskTypeDetailView(LoginRequiredMixin, generic.DetailView):
