@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block title %}
+  Task "{{ task.name }}"
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid py-4">
+    <div class="row mb-6">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center border-bottom">
+          <h3 class="mb-0">{{ task.name }}</h3>
+          <div class="btn-group">
+            <a href="{% url 'manager:task-update' pk=task.id %}" class="btn btn-secondary">
+              <i class="fas fa-edit"></i> Update
+            </a>
+            <a href="{% url 'manager:task-delete' pk=task.id %}" class="btn btn-danger">
+              <i class="fas fa-trash"></i> Delete
+            </a>
+          </div>
+        </div>
+
+
+        <div class="card-body">
+          <p class="text-muted mb-2"><strong>Priority:</strong> {{ task.get_priority_display }}</p>
+          <p class="text-muted mb-2"><strong>Status:</strong> {{ task.get_status_display }}</p>
+          <p class="text-muted mb-2"><strong>Task type:</strong> {{ task.task_type }}</p>
+          <p class="text-muted mb-2"><strong>Task tags:</strong> {{ task.task_tag.all|join:", " }}</p>
+          <p class="text-muted mb-2"><strong>Due date:</strong> {{ task.deadline|date:"F j, Y, P" }}</p>
+
+          <p class="text-muted mb-2 d-inline"><strong>Assignees:</strong></p>
+
+          {% if task.assignees %}
+            <div class="d-inline">
+              {% for assignee in task.assignees.all %}
+                <a href="{% url "manager:worker-detail" pk=assignee.id %} "
+                   class="btn btn-sm btn-outline-secondary m-1 p-1 text-capitalize">
+                  {{ assignee.first_name }}
+                  {{ assignee.last_name }}{% if request.user == assignee %} (Me){% endif %}
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            There are no assignees!
+          {% endif %}
+          {% if task in user.assigned_tasks.all %}
+            <a href="{% url 'manager:toggle-task-assign' pk=task.id %}"
+               class="text-primary text-bold text-sm link-to-page d-inline">
+              - Delete me from this task
+            </a>
+          {% else %}
+            <a href="{% url 'manager:toggle-task-assign' pk=task.id %}"
+               class="text-primary text-bold text-sm link-to-page d-inline">
+              + Assign me to this task
+            </a>
+          {% endif %}
+          <p class="text-muted"><strong>Description:</strong></p>
+          <div class="p-2 bg-light border rounded">
+            <p>{{ task.description }}</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  Task List
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid py-4">
+    <div class="row">
+      <div class="mb-md-0 mb-4">
+        <div class="card">
+          <div class="card-header pb-0">
+            <div class="row">
+              <div class="col-12 col-lg-6">
+                <h3 class="mb-2">Company Tasks List</h3>
+              </div>
+              <div class="col-12 col-lg-6 my-auto">
+                <div class="float-lg-end pe-4">
+                  <a href="{% url 'manager:task-create' %}" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         class="bi bi-plus-lg"
+                         viewBox="0 0 16 16">
+                      <path fill-rule="evenodd"
+                            d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"></path>
+                    </svg>
+                    New task
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% include "includes/search_form.html" %}
+
+          </div>
+          <div class="card-body px-0 pb-2">
+            <div class="table-responsive">
+              <table class="table align-items-center mb-0">
+                <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3 py-1">Key #</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Name</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3 py-1">
+                    Assignees
+                  </th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-2 py-1">
+                    Deadline
+                  </th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-2 py-1">
+                    Priority
+                  </th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-2 py-1">
+                    Status
+                  </th>
+                </tr>
+                </thead>
+
+                {% if task_list %}
+
+                  {% for task in task_list %}
+                    <tbody>
+
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2 py-1">
+                          <h6 class="mb-0 text-xs text-secondary">TASK-{{ task.id }}</h6>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex">
+                          <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0">
+                              <a href="{% url "manager:task-detail" pk=task.id %}">{{ task.name }}</a>
+                            </h6>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          {% if task.assignees %}
+                            <div class="d-flex flex-wrap">
+                              {% for assignee in task.assignees.all %}
+                                <a href="{% url "manager:worker-detail" pk=assignee.id %} "
+                                   class="btn btn-sm {% if request.user == assignee %} btn-outline-primary{% else %}btn-outline-secondary{% endif %} m-1 p-1 text-capitalize">
+                                  {{ assignee.first_name }}
+                                  {{ assignee.last_name }}{% if request.user == assignee %} (Me){% endif %}
+                                </a>
+                              {% endfor %}
+                            </div>
+                          {% endif %}
+                        </div>
+                      </td>
+                      <td class="text-sm">
+                        <div class="d-flex">
+                          <div class="d-flex flex-column justify-content-center">
+                          <span class="badge bg-light text-black-50 text-xs opacity-7">
+                            {% if task.deadline %}
+                              {{ task.deadline|date:"D, d M Y" }}
+                            {% else %}
+                              optional
+                            {% endif %}
+                      </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="align-middle">
+                        {% if task.priority == task.PriorityOptions.URGENT %}
+                          <span class="text-xs font-weight-bold text-danger">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-caret-up-fill" viewBox="0 0 16 16">
+                              <path
+                                  d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"></path>
+                            </svg>
+
+                          {{ task.get_priority_display }}
+                        </span>
+                        {% elif task.priority == task.PriorityOptions.HIGH_PRIORITY %}
+                          <span class="text-xs font-weight-bold text-warning">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-caret-up" viewBox="0 0 16 16">
+                              <path
+                                  d="M3.204 11h9.592L8 5.519 3.204 11zm-.753-.659 4.796-5.48a1 1 0 0 1 1.506 0l4.796 5.48c.566.647.106 1.659-.753 1.659H3.204a1 1 0 0 1-.753-1.659z"></path>
+                            </svg>
+
+                          {{ task.get_priority_display }}
+                        </span>
+                        {% elif task.priority == task.PriorityOptions.MEDIUM_PRIORITY %}
+                          <span class="text-xs font-weight-bold text-success">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-dash" viewBox="0 0 16 16">
+                            <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"></path>
+                          </svg>
+
+                          {{ task.get_priority_display }}
+                        </span>
+                        {% else %}
+                          <span class="text-xs font-weight-bold text-secondary">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-caret-down" viewBox="0 0 16 16">
+                            <path
+                                d="M3.204 5h9.592L8 10.481 3.204 5zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"></path>
+                          </svg>
+
+                          {{ task.get_priority_display }}
+                        </span>
+                        {% endif %}
+
+                      </td>
+                      <td class="align-middle">
+                        <span class="badge text-xs
+                            {% if task.status == task.StatusChoices.TO_DO %}
+                            bg-secondary
+                            {% elif task.status == task.StatusChoices.IN_PROGRESS %}
+                            bg-info text-white
+                            {% elif task.status == task.StatusChoices.DONE %}
+                            bg-success text-white
+                            {% else %}
+                            bg-light text-black-50
+                            {% endif %} ">
+                          {{ task.get_status_display }}
+                      </span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+                {% else %}
+                  <tbody>
+                  <tr>
+                    <td colspan="6" class="text-center py-4">
+                      <h4>No tasks found!</h4>
+                      <p>Looks like there are no tasks at the moment. You can create a new task by clicking the "New
+                        task" button above.</p>
+                    </td>
+                  </tr>
+                  </tbody>
+                {% endif %}
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
