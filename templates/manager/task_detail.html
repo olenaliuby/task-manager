@@ -57,11 +57,44 @@
           {% endif %}
           <p class="text-muted"><strong>Description:</strong></p>
           <div class="p-2 bg-light border rounded">
+            {% if task.description %}
             <p>{{ task.description }}</p>
+              {% else %}
+              <p>No description yet</p>
+            {% endif %}
           </div>
 
         </div>
       </div>
+      {% for comment in comments %}
+        <div class="card mt-4">
+          <div class="card-body">
+            <h5 class="card-title">{{ comment.user }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ comment.created_time|date:"F j, Y, P" }}</h6>
+            <p class="card-text p-2 border rounded">{{ comment.content }}</p>
+
+            {% if comment.user == request.user %}
+              <div class="btn-group" role="group" aria-label="Comment actions">
+                <a href="{% url 'manager:commentary-update' pk=comment.id %}" class="btn btn-light">
+                  <i class="fas fa-edit"></i> Update
+                </a>
+                <a href="{% url 'manager:commentary-delete' pk=comment.id %}" class="btn btn-light">
+                  <i class="fas fa-trash"></i> Delete
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+
+
+      <h6 class="mt-4">Comment on this task</h6>
+
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-dark">Submit</button>
+      </form>
     </div>
   </div>
 {% endblock %}
