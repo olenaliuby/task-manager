@@ -1,0 +1,43 @@
+{% load query_transform %}
+
+{% load query_transform %}
+
+{% if is_paginated %}
+  <div class="container">
+    <div class="row justify-space-between py-2">
+      <div class="col-lg-4 mx-auto">
+        <ul class="pagination pagination-light m-4">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?{% query_transform request page=page_obj.previous_page_number %}"
+                 aria-label="Previous">
+                <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+              </a>
+            </li>
+          {% endif %}
+
+          {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+              <li class="page-item active">
+                <a class="page-link" href="javascript:;">{{ i }}</a>
+              </li>
+            {% else %}
+              <li class="page-item">
+                <a class="page-link" href="?{% query_transform request page=i %}">{{ i }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?{% query_transform request page=page_obj.next_page_number %}"
+                 aria-label="Next">
+                <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endif %}
