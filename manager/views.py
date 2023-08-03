@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
@@ -8,6 +9,8 @@ from manager.forms import (
     WorkerPositionSearchForm,
     WorkerCreationForm,
     WorkerUpdateForm,
+    TaskNameSearchForm,
+    TaskCreateForm,
 )
 from manager.models import Task, Worker
 
@@ -94,3 +97,69 @@ class WorkerUpdateView(LoginRequiredMixin, generic.UpdateView):
 class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Worker
     success_url = reverse_lazy("manager:worker-list")
+
+
+class TaskListView(LoginRequiredMixin, generic.ListView):
+    model = Task
+    queryset = (
+        Task.objects
+        .select_related("task_type")
+        .prefetch_related("assignees")
+    )
+    paginate_by = 10
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+
+        context["search_form"] = TaskNameSearchForm(
+            initial={"name": name}
+        )
+
+        return context
+
+    def get_queryset(self):
+        form = TaskNameSearchForm(self.request.GET)
+
+        if form.is_valid():
+            return super().get_queryset().filter(
+                name__icontains=form.cleaned_data["name"]
+            )
+
+
+class TaskDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Task
+    queryset = (
+        Task.objects
+        .prefetch_related("assignees")
+        .select_related("task_type")
+    )
+
+
+class TaskCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Task
+    form_class = TaskCreateForm
+    success_url = reverse_lazy("manager:task-list")
+
+
+class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Task
+    form_class = TaskCreateForm
+    success_url = reverse_lazy("manager:task-list")
+
+
+class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Task
+    success_url = reverse_lazy("manager:task-list")
+
+
+@login_required
+def toggle_assign_to_task(request, pk):
+    worker = Worker.objects.get(id=request.user.id)
+    if (
+            Task.objects.get(id=pk) in worker.assigned_tasks.all()
+    ):
+        worker.assigned_tasks.remove(pk)
+    else:
+        worker.assigned_tasks.add(pk)
+    return HttpResponseRedirect(reverse_lazy("manager:task-detail", args=[pk]))
