@@ -77,3 +77,16 @@ class TaskTypeNameSearchForm(forms.Form):
         label="",
         widget=forms.TextInput(attrs={"placeholder": "Search by name"})
     )
+
+
+class CommentaryForm(forms.ModelForm):
+    content = forms.CharField(
+        label=False,
+        widget=forms.Textarea(
+            attrs={"rows": 5, "placeholder": "Add more details"})
+        ,
+    )
+
+    class Meta:
+        model = Commentary
+        fields = ["content"]
