@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  App Main page
+{% endblock title %}
+
+{% block content %}
+  <div class="container py-4">
+    <h3 class="mb-4">Welcome back, {{ user.first_name }}! Here your tasks overview.</h3>
+    <div class="row mb-6">
+      <div class="col-xl-3 col-sm-6 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <p class="">Tasks to do</p>
+            <h3 class="card-title">{{ to_do_tasks_count }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-text">In progress</p>
+            <h3 class="card-title">{{ in_progress_tasks_count }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-text">Finished</p>
+            <h3 class="card-title">{{ done_tasks_count }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-text">Archived</p>
+            <h3 class="card-title">{{ archived_tasks_count }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xl-6 col-sm-6 mb-4">
+        <h5>To Do</h5>
+        {% for task in to_do_tasks %}
+          <a href="{% url "manager:task-detail" pk=task.id %}">
+            <div class="card mb-3">
+              <div class="card-body">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                     class="bi bi-arrow-up-right-circle position-absolute top-30 end-3 color-background opacity-6"
+                     viewBox="0 0 16 16">
+                  <path fill-rule="evenodd"
+                        d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.854 10.803a.5.5 0 1 1-.708-.707L9.243 6H6.475a.5.5 0 1 1 0-1h3.975a.5.5 0 0 1 .5.5v3.975a.5.5 0 1 1-1 0V6.707l-4.096 4.096z"></path>
+                </svg>
+                <p class="text-sm">{{ task.deadline|date:"D, d M Y" }}</p>
+                <h4 class="card-title">{{ task.name }}</h4>
+                <p>{{ task.description|truncatewords:15 }}</p>
+                <div
+                    class="badge {% if task.priority == task.PriorityOptions.URGENT %}bg-danger
+                      {% elif task.priority == task.PriorityOptions.HIGH_PRIORITY %}bg-primary
+                      {% elif task.priority == task.PriorityOptions.MEDIUM_PRIORITY %}bg-warning
+                      {% else %}bg-info
+                      {% endif %} mt-3">
+                  {{ task.get_priority_display }}
+                </div>
+              </div>
+            </div>
+          </a>
+        {% empty %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <p>No tasks in To Do yet</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="col-xl-6 col-sm-6 mb-4">
+        <h5>In Progress</h5>
+        {% for task in in_progress_tasks %}
+          <a href="{% url "manager:task-detail" pk=task.id %}">
+            <div class="card mb-3">
+              <div class="card-body">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                     class="bi bi-arrow-up-right-circle position-absolute top-30 end-3 color-background opacity-6"
+                     viewBox="0 0 16 16">
+                  <path fill-rule="evenodd"
+                        d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.854 10.803a.5.5 0 1 1-.708-.707L9.243 6H6.475a.5.5 0 1 1 0-1h3.975a.5.5 0 0 1 .5.5v3.975a.5.5 0 1 1-1 0V6.707l-4.096 4.096z"></path>
+                </svg>
+                <p class="text-sm">{{ task.deadline|date:"D, d M Y" }}</p>
+                <h4 class="card-title">{{ task.name }}</h4>
+                <p>{{ task.description|truncatewords:15 }}</p>
+                <div
+                    class="badge {% if task.priority == task.PriorityOptions.URGENT %}bg-danger
+                      {% elif task.priority == task.PriorityOptions.HIGH_PRIORITY %}bg-primary
+                      {% elif task.priority == task.PriorityOptions.MEDIUM_PRIORITY %}bg-warning
+                      {% else %}bg-info
+                      {% endif %} mt-3">
+                  {{ task.get_priority_display }}
+                </div>
+              </div>
+            </div>
+          </a>
+        {% empty %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <p>No tasks in progress yet</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% include "includes/footer.html" %}
+{% endblock content %}
