@@ -45,21 +45,21 @@
             There are no assignees!
           {% endif %}
           {% if task in user.assigned_tasks.all %}
-            <a href="{% url 'manager:toggle-task-assign' pk=task.id %}"
-               class="text-primary text-bold text-sm link-to-page d-inline">
-              - Delete me from this task
-            </a>
+            <form method="post" action="{% url 'manager:toggle-task-assign' pk=task.id %}" class="d-inline">
+              {% csrf_token %}
+              <input class="btn btn-link btn-sm text-sm text-secondary link-to-page p-0 mb-0" type="submit" value="- Delete me from this task">
+            </form>
           {% else %}
-            <a href="{% url 'manager:toggle-task-assign' pk=task.id %}"
-               class="text-primary text-bold text-sm link-to-page d-inline">
-              + Assign me to this task
-            </a>
+            <form method="post" action="{% url 'manager:toggle-task-assign' pk=task.id %}" class="d-inline">
+              {% csrf_token %}
+              <input class="btn btn-link btn-sm text-sm link-to-page p-0 mb-0" type="submit" value="+ Assign me to this task">
+            </form>
           {% endif %}
           <p class="text-muted"><strong>Description:</strong></p>
           <div class="p-2 bg-light border rounded">
             {% if task.description %}
-            <p>{{ task.description }}</p>
-              {% else %}
+              <p>{{ task.description }}</p>
+            {% else %}
               <p>No description yet</p>
             {% endif %}
           </div>
