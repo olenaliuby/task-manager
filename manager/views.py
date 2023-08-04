@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
+from collections import defaultdict
 
 from manager.forms import (
     WorkerPositionSearchForm,
@@ -26,32 +27,18 @@ def index(request):
         .prefetch_related("assignees")
     ).filter(assignees=request.user)
 
-    to_do_tasks = []
-    in_progress_tasks = []
-    done_tasks = []
-    archived_tasks = []
+    tasks_by_status = defaultdict(list)
 
     for task in task_list:
-        if task.status == Task.StatusChoices.TO_DO:
-            to_do_tasks.append(task)
-        elif task.status == Task.StatusChoices.IN_PROGRESS:
-            in_progress_tasks.append(task)
-        elif task.status == Task.StatusChoices.DONE:
-            done_tasks.append(task)
-        elif task.status == Task.StatusChoices.ARCHIVED:
-            archived_tasks.append(task)
+        tasks_by_status[task.status].append(task)
 
     context = {
         "task_list": task_list,
-        "to_do_tasks": to_do_tasks,
-        "in_progress_tasks": in_progress_tasks,
-        "done_tasks": done_tasks,
-        "archived_tasks": archived_tasks,
-        "to_do_tasks_count": len(to_do_tasks),
-        "in_progress_tasks_count": len(in_progress_tasks),
-        "done_tasks_count": len(done_tasks),
-        "archived_tasks_count": len(archived_tasks),
     }
+
+    for status, task_list in tasks_by_status.items():
+        context[f"status_{status}_tasks"] = task_list
+        context[f"status_{status}_tasks_count"] = len(task_list)
 
     return render(request, "manager/index.html", context=context)
 
