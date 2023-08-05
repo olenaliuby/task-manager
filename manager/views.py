@@ -1,7 +1,6 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views import generic, View
 from collections import defaultdict
@@ -18,29 +17,32 @@ from manager.forms import (
 from manager.models import Task, Worker, TaskType, Commentary
 
 
-@login_required
-def index(request):
-    """View function for the home page of the app."""
-    task_list = (
-        Task.objects
-        .select_related("task_type")
-        .prefetch_related("assignees")
-    ).filter(assignees=request.user)
+class WorkerAssignedTaskListView(LoginRequiredMixin, generic.ListView):
+    """View for the home page of the app."""
 
-    tasks_by_status = defaultdict(list)
+    model = Task
+    template_name = "manager/index.html"
+    context_object_name = "worker_assigned_tasks"
 
-    for task in task_list:
-        tasks_by_status[task.status].append(task)
+    def get_queryset(self):
+        return (
+            Task.objects
+            .select_related("task_type")
+            .prefetch_related("assignees")
+        ).filter(assignees=self.request.user)
 
-    context = {
-        "task_list": task_list,
-    }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tasks_by_status = defaultdict(list)
 
-    for status, task_list in tasks_by_status.items():
-        context[f"status_{status}_tasks"] = task_list
-        context[f"status_{status}_tasks_count"] = len(task_list)
+        for task in context["worker_assigned_tasks"]:
+            tasks_by_status[task.status].append(task)
 
-    return render(request, "manager/index.html", context=context)
+        for status, task_list in tasks_by_status.items():
+            context[f"status_{status}_tasks"] = task_list
+            context[f"status_{status}_tasks_count"] = len(task_list)
+
+        return context
 
 
 class WorkerListView(LoginRequiredMixin, generic.ListView):

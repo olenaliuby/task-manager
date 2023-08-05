@@ -4,7 +4,7 @@ URL configuration for manager app.
 from django.urls import path
 
 from manager.views import (
-    index,
+    WorkerAssignedTaskListView,
     WorkerListView,
     WorkerCreateView,
     WorkerDetailView,
@@ -26,7 +26,7 @@ from manager.views import (
 )
 
 urlpatterns = [
-    path("", index, name="index"),
+    path("", WorkerAssignedTaskListView.as_view(), name="index"),
     path("team/", WorkerListView.as_view(), name="worker-list"),
     path("team/create/", WorkerCreateView.as_view(), name="worker-create"),
     path("team/<int:pk>/", WorkerDetailView.as_view(), name="worker-detail"),
