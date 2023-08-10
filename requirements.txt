@@ -1,12 +1,13 @@
 asgiref==3.7.2
 crispy-bootstrap4==2022.1
+dj-database-url==2.0.0
 Django==4.2.4
 django-crispy-forms==2.0
 django-taggit==4.0.0
 mccabe==0.7.0
+psycopg2-binary==2.9.7
 pycodestyle==2.11.0
 pyflakes==3.1.0
 sqlparse==0.4.4
 typing_extensions==4.7.1
-dj_database_url==2.0.0
-psycopg2-binary==2.9.7
+whitenoise==6.5.0
