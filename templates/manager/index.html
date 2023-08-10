@@ -7,13 +7,14 @@
 
 {% block content %}
   <div class="container py-4">
-    <h3 class="mb-4">Welcome back, {{ user.first_name }}! Here your tasks overview.</h3>
+    <h3 class="mb-4">Welcome back{% if user.first_name %}, {{ user.first_name }}{% endif %}! Here your tasks
+      overview.</h3>
     <div class="row mb-6">
       <div class="col-xl-3 col-sm-6 mb-4">
         <div class="card">
           <div class="card-body">
             <p class="">Tasks to do</p>
-            <h3 class="card-title">{{ status_TD_tasks_count }}</h3>
+            <h3 class="card-title">{% if status_TD_tasks_count %}{{ status_TD_tasks_count }}{% else %}0{% endif %}</h3>
           </div>
         </div>
       </div>
@@ -21,7 +22,7 @@
         <div class="card">
           <div class="card-body">
             <p class="card-text ">In progress</p>
-            <h3 class="card-title">{{ status_IP_tasks_count }}</h3>
+            <h3 class="card-title">{% if status_IP_tasks_count %}{{ status_IP_tasks_count }}{% else %}0{% endif %}</h3>
           </div>
         </div>
       </div>
@@ -29,7 +30,7 @@
         <div class="card">
           <div class="card-body">
             <p class="card-text">Finished</p>
-            <h3 class="card-title">{{ status_DN_tasks_count }}</h3>
+            <h3 class="card-title">{% if status_DN_tasks_count %}{{ status_DN_tasks_count }}{% else %}0{% endif %}</h3>
           </div>
         </div>
       </div>
@@ -37,7 +38,7 @@
         <div class="card">
           <div class="card-body">
             <p class="card-text">Archived</p>
-            <h3 class="card-title">{{ status_AR_tasks_count }}</h3>
+            <h3 class="card-title">{% if status_AR_tasks_count %}{{ status_AR_tasks_count }}{% else %}0{% endif %}</h3>
           </div>
         </div>
       </div>
