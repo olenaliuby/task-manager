@@ -7,7 +7,7 @@
 
 ## Check it out
 
-[Task Manager project deployed to Render](PASTE LINK)
+[Task Manager project deployed to Render](https://task-manager-8a66.onrender.com/)
 
 ### User credentials for tests:
 
